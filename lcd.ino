@@ -14,6 +14,10 @@
 
 #define DATA_PIN(PIN_NUM) 40 + PIN_NUM
 
+//#define SW 50
+#define SW A2
+#define VRx A0
+#define VRy A1
 
 #define DISPLAY_STRING {'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!'}
 
@@ -60,7 +64,15 @@ void setup() {
   for(uint8 p_index = 0; p_index < 8; p_index++) 
     pinMode(DATA_PIN(p_index), OUTPUT);
 
-  //
+  pinMode(SW, INPUT);
+  pinMode(VRx, INPUT);
+  pinMode(VRy, INPUT);
+
+  /**
+   * Serial data stuff
+   */
+
+  Serial.begin(9600);
 
   /**
    * Data writing
@@ -74,7 +86,7 @@ void setup() {
   writeToDataPins(0b00111000);
 
   //Initalize display
-  writeToDataPins(0b00001100);
+  writeToDataPins(0b00001111);
   
   //Clear display and move to beginning
   writeToDataPins(0b00000001);
@@ -88,4 +100,29 @@ void setup() {
 }
 
 void loop() {
+  //Serial.print(digitalRead(SW) == HIGH ? "[X] " : "[ ] ");
+  Serial.print(analogRead(SW) < 75 ? "[X] " : "[ ] ");
+  //Serial.print(analogRead(SW));
+  Serial.print(" : ");
+  Serial.print(analogRead(VRx));
+  Serial.print(", ");
+  Serial.print(analogRead(VRy));
+  Serial.print("\n");
 }
+
+/**
+ * TODO:
+ * Move cursor left/right based on VRx voltage
+ *   Find how to move cursor
+ *   Deadzone and repeating things
+ * Increase/decrease character based on VRy voltage
+ *   Find how to read character
+ *   Increase ASCII value (`man ascii`)
+ *   Actually write data
+ * Switch reading
+ *   Similar to moving cursor (turn that into a function)
+ *   
+ * Future:
+ * Make a full on text editor
+ * GVAGBASIC????
+ */
